@@ -47,3 +47,10 @@ func (hlm *HelloWorldModule) SayHelloWorld(w http.ResponseWriter, r *http.Reques
 	hlm.stats.Add(1)
 	w.Write([]byte("Hello " + hlm.something))
 }
+
+//FOR TRAINING
+func (hlm *HelloWorldModule) SayMyName(w http.ResponseWriter, r *http.Request) {
+	hlm.stats.Add(1)
+	myName := "My Name"
+	w.Write([]byte("Hello " + myName))
+}
