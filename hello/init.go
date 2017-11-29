@@ -52,5 +52,6 @@ func (hlm *HelloWorldModule) SayHelloWorld(w http.ResponseWriter, r *http.Reques
 func (hlm *HelloWorldModule) SayMyName(w http.ResponseWriter, r *http.Request) {
 	hlm.stats.Add(1)
 	myName := "My Name"
-	w.Write([]byte("Hello " + myName))
+	message := r.FormValue("message")
+	w.Write([]byte("Hello " + myName + "!! Message: " + message))
 }
