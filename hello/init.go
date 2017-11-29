@@ -4,6 +4,7 @@ import (
 	"expvar"
 	"log"
 	"net/http"
+	"text/template"
 
 	logging "gopkg.in/tokopedia/logging.v1"
 )
@@ -20,6 +21,7 @@ type HelloWorldModule struct {
 	cfg       *Config
 	something string
 	stats     *expvar.Int
+	render    *template.Template  //FOR TRAINING
 }
 
 func NewHelloWorldModule() *HelloWorldModule {
@@ -35,10 +37,14 @@ func NewHelloWorldModule() *HelloWorldModule {
 	// this message only shows up if app is run with -debug option, so its great for debugging
 	logging.Debug.Println("hello init called", cfg.Server.Name)
 
+	//FOR TRAINING
+	engine := template.Must(template.ParseGlob("files/var/templates/*"))
+
 	return &HelloWorldModule{
 		cfg:       &cfg,
 		something: "John Doe",
 		stats:     expvar.NewInt("rpsStats"),
+		render:    engine,    //FOR TRAINING
 	}
 
 }
@@ -49,8 +55,40 @@ func (hlm *HelloWorldModule) SayHelloWorld(w http.ResponseWriter, r *http.Reques
 }
 
 //FOR TRAINING
+type Animal struct {
+	Name string
+	Type string
+	Legs int
+}
+
 func (hlm *HelloWorldModule) SayMyName(w http.ResponseWriter, r *http.Request) {
 	hlm.stats.Add(1)
-	myName := "My Name"
-	w.Write([]byte("Hello " + myName))
+
+	thisMap := map[string]string{
+		"bca":     "5270366793",
+		"mandiri": "010002848657575",
+		"bri":     "357575774",
+		"bni":     "08348375756475",
+	}
+	
+	thisArr := []string{"Apple", "Orange", "Banana"}
+
+	thisStruct := Animal{
+		Name: "Alvin",
+		Type: "Anjing",
+		Legs: 4,
+	}
+
+	data := map[string]interface{}{
+		"name":   "My Name",
+		"age":    "17",
+		"banks":  thisMap,
+		"fruits": thisArr,
+		"dog":    thisStruct,
+	}
+	
+	err := hlm.render.ExecuteTemplate(w, "home.html", data)
+	if err != nil {
+		log.Println("Gagal Render Template because: ", err.Error())
+	}
 }

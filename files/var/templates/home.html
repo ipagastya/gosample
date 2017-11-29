@@ -1,0 +1,34 @@
+<html>
+	<head>
+		<title>This is Testing</title>
+	</head>
+	<body>
+		My Name is {{ .name }}<br>
+		My Age is {{ .age }}<br>
+		<br>
+		
+		<table>
+			<tr>
+				<td>Bank</td>
+				<td>Account</td>
+			</tr>
+			{{ range $key, $value := .banks }}
+			<tr>
+				<td>{{ $key }}</td>
+				<td>{{ $value }}</td>
+			</tr>
+			{{ end }}
+		</table>
+
+		<ol>
+		{{ range $key, $value := .fruits }}
+			<li>{{ $value }}</li>
+		{{ end }}
+		</ol>
+
+		Dog Information<br>
+		Name: {{ .dog.Name }}<br>
+		Type: {{ .dog.Type }}<br>
+		Legs: {{ .dog.Legs }}
+	</body>
+</html>
