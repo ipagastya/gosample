@@ -20,6 +20,8 @@ type HelloWorldModule struct {
 	cfg       *Config
 	something string
 	stats     *expvar.Int
+	private   string
+	Public    string
 }
 
 func NewHelloWorldModule() *HelloWorldModule {
@@ -39,11 +41,23 @@ func NewHelloWorldModule() *HelloWorldModule {
 		cfg:       &cfg,
 		something: "John Doe",
 		stats:     expvar.NewInt("rpsStats"),
+		private:   "Super Secret Information",
+		Public:    "Tokopedia is a marketplace",
 	}
 
 }
 
 func (hlm *HelloWorldModule) SayHelloWorld(w http.ResponseWriter, r *http.Request) {
+	hlm.stats.Add(1)
+	w.Write([]byte("Hello " + hlm.something))
+}
+
+func (hlm *HelloWorldModule) thisIsPrivate(w http.ResponseWriter, r *http.Request) {
+	hlm.stats.Add(1)
+	w.Write([]byte("Hello " + hlm.something))
+}
+
+func (hlm *HelloWorldModule) ThisIsPublic(w http.ResponseWriter, r *http.Request) {
 	hlm.stats.Add(1)
 	w.Write([]byte("Hello " + hlm.something))
 }

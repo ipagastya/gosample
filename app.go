@@ -29,6 +29,14 @@ func main() {
 	hwm := hello.NewHelloWorldModule()
 
 	http.HandleFunc("/hello", hwm.SayHelloWorld)
+	
+	//FOR TRAINING
+	//http.HandleFunc("/private", hwm.thisIsPrivate)
+	http.HandleFunc("/public", hwm.ThisIsPublic)
+
+	//log.Println(hwm.private)
+	log.Println(hwm.Public)
+
 	go logging.StatsLog()
 
 	log.Fatal(grace.Serve(":9000", nil))
