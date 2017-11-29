@@ -29,6 +29,9 @@ func main() {
 	hwm := hello.NewHelloWorldModule()
 
 	http.HandleFunc("/hello", hwm.SayHelloWorld)
+
+	//FOR TRAINING
+	http.HandleFunc("/book", hwm.BookInfoHandler)
 	go logging.StatsLog()
 
 	log.Fatal(grace.Serve(":9000", nil))
