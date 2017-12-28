@@ -73,18 +73,19 @@ func NewWebsiteModule() *WebsiteModule {
 	}
 }
 
-func (nwm *NewWebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Request, data) {
+func (nwm *NewWebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Request) {
 	visitorCount := c.Do("INCR", "visitors")
 
 	user := []User{}
-	err = db.Select(&user, "SELECT user_id, user_name, msisdn, email, birth_date, created_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),"0") AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10", r.formValue())
+	err1 := db.Select(&user, "SELECT user_id, user_name, msisdn, email, birth_date, created_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),"0") AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10", r.formValue())
+	
 	data := map[string]interface{}{
 		"user": user,
 		"visitorCount": visitorCount,
 	}
 
-	err := nwm.render.ExecuteTemplate(w, "home.html", data)
-	if err != nil {
+	err2 := nwm.render.ExecuteTemplate(w, "home.html", data)
+	if err2 != nil {
 		log.Println("Gagal Render Template because: ", err.Error())
 	}
 }
