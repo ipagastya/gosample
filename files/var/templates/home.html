@@ -15,14 +15,23 @@
 				<td>created_time</td>
 				<td>update_time</td>
 				<td>user_age</td>
+				<td>calculation</td>
 			</tr>
 			{{ range _, $usr := .user }}
 			<tr>
 				{{ range _, $value := $usr}}
 				<td>{{ $value }}</td>
+				{{ end }}
+				{{ _, $result := .calculation }}
+				<td>{{ $result }}</td>
+				{{ end }}
 			</tr>
 			{{ end }}
 		</table>
+		<form>
+			Filter by Name:<br/>
+  			<input type="text" name="q"><br>
+		</form>
 		Visitors count: {{ .visitorCount }}
 	</body>
 </html>
