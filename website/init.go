@@ -90,9 +90,9 @@ func (nwm *NewWebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Reques
 	user_name := "%"+r.FormValue("q")+"%"
 	var query string
 	if user_name != "%%" {
-		query = "SELECT user_id, COALESCE(user_name,'-'), COALESCE(msisdn,'-'), email, COALESCE(brith_date,'-'), COALESCE(create_time, date_trunc('second', now()::timestamp)), COALESCE(update_time, '-'), COALESCE(EXTRACT(YEAR from AGE(birth_date)),'0') AS user_age FROM WS_USER")
+		query = "SELECT user_id, COALESCE(user_name,'-'), COALESCE(msisdn,'-'), email, COALESCE(brith_date,'-'), COALESCE(create_time, date_trunc('second', now()::timestamp)), COALESCE(update_time, '-'), COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER")
 	} else {
-		query = "SELECT user_id, COALESCE(user_name,'-'), COALESCE(msisdn,'-'), email, COALESCE(birth_date,'-'), COALESCE(create_time, date_trunc('second', now()::timestamp)), COALESCE(update_time, '-'), COALESCE(EXTRACT(YEAR from AGE(birth_date)),'0') AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10;", user_name)
+		query = "SELECT user_id, COALESCE(user_name,'-'), COALESCE(msisdn,'-'), email, COALESCE(birth_date,'-'), COALESCE(create_time, date_trunc('second', now()::timestamp)), COALESCE(update_time, '-'), COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10;", user_name)
 	}
 	nwm.db.Select(&user, query)
 	
