@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<title>This is Testing</title>
+	</head>
+	<body>
+		My Name is {{ .name }}<br>
+		My Age is {{ .age }}<br>
+		<table>
+			<tr>
+				<td>ID</td>
+				<td>Name</td>
+				<td>MSISDN</td>
+				<td>Email</td>
+				<td>birth_date</td>
+				<td>created_time</td>
+				<td>update_time</td>
+				<td>user_age</td>
+			</tr>
+			{{ range _, $usr := .user }}
+			<tr>
+				{{ range _, $value := $usr}}
+				<td>{{ $value }}</td>
+			</tr>
+			{{ end }}
+		</table>
+		Visitors count: {{ .visitorCount }}
+	</body>
+</html>
