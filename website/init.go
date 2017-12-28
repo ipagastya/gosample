@@ -14,20 +14,15 @@ import (
 )
 
 type User struct {
-	ID int 'db:"user_id"'
-	Name string 'db:"user_name"'
+	ID int `db:"user_id"`
+	Name string `db:"user_name"`
 	MSISDN string
 	Email string
 	birth_date time.Time
 	created_time time.Time
 	update_time time.Time
-	user_age int 'db:"-"'
+	user_age int `db:"-"`
 }
-
-var (
-	db interface{}
-	c interface{}
-)
 
 func init() {
 	*db, err = sqlx.Connect("postgres", "postgres://da161205:123Toped456@devel-postgre.tkpd/tokopedia-user?sslmode=disable")
@@ -51,6 +46,8 @@ type WebsiteModule struct {
 	visitorCount string
 	stats     *expvar.Int
 	render    *template.Template  //FOR TRAINING
+	db 		  *DB
+	c 		  Conn
 }
 
 func NewWebsiteModule() *WebsiteModule {
@@ -81,7 +78,7 @@ func (nwm *NewWebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Reques
 
 	user := []User{}
 	err = db.Select(&user, "SELECT user_id, user_name, msisdn, email, birth_date, created_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),"0") AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10", r.formValue())
-	data := {
+	data := map[string]interface{}{
 		"user": user,
 		"visitorCount": visitorCount,
 	}

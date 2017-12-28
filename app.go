@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-  	"github.com/tokopedia/gosample/website"
+  	"github.com/vinctcent/gosample/website"
 	grace "gopkg.in/tokopedia/grace.v1"
 	logging "gopkg.in/tokopedia/logging.v1"
 )
