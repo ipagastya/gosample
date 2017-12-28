@@ -77,7 +77,7 @@ func (nwm *NewWebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Reques
 	visitorCount := c.Do("INCR", "visitors")
 
 	user := []User{}
-	err1 := db.Select(&user, "SELECT user_id, user_name, msisdn, email, birth_date, created_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),"0") AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10", r.formValue())
+	err1 := db.Select(&user, fmt.Sprintf("SELECT user_id, user_name, msisdn, email, birth_date, created_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),"0") AS user_age FROM WS_USER WHERE user_name LIKE '%%$1%%' ORDER BY user_name ASC LIMIT 10", r.formValue()))
 	
 	data := map[string]interface{}{
 		"user": user,
