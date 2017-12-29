@@ -22,7 +22,7 @@
 				{{ range _, $value := $usr}}
 				<td>{{ $value }}</td>
 				{{ end }}
-				{{ _, $result := .calculation }}
+				{{ range _, $result := .calculation }}
 				<td>{{ $result }}</td>
 				{{ end }}
 			</tr>

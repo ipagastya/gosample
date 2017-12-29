@@ -1,13 +1,12 @@
 package hello
 
 import (
-	"expvar"
 	"log"
 	"net/http"
 	"text/template"
 	logging "gopkg.in/tokopedia/logging.v1"
 	"database/sql"
-    _ "github.com/lib/pq"
+    "github.com/lib/pq"
     "fmt"
     "github.com/jmoiron/sqlx"
     "github.com/garyburd/redigo/redis"
@@ -90,9 +89,9 @@ func (nwm *NewWebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Reques
 	user_name := "%"+r.FormValue("q")+"%"
 	var query string
 	if user_name != "%%" {
-		nwm.db.select(&user, "SELECT user_id, COALESCE(user_name,'-'), COALESCE(msisdn,'-'), email, COALESCE(birth_date,'-'), COALESCE(create_time, date_trunc('second', now()::timestamp)), COALESCE(update_time, '-'), COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER;")
+		nwm.db.Select(&user, "SELECT user_id, COALESCE(user_name,'-'), COALESCE(msisdn,'-'), email, COALESCE(birth_date,'-'), COALESCE(create_time, date_trunc('second', now()::timestamp)), COALESCE(update_time, '-'), COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER;")
 	} else {
-		nwm.db.select(&user, "SELECT user_id, COALESCE(user_name,'-'), COALESCE(msisdn,'-'), email, COALESCE(birth_date,'-'), COALESCE(create_time, date_trunc('second', now()::timestamp)), COALESCE(update_time, '-'), COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10;", user_name)
+		nwm.db.Select(&user, "SELECT user_id, COALESCE(user_name,'-'), COALESCE(msisdn,'-'), email, COALESCE(birth_date,'-'), COALESCE(create_time, date_trunc('second', now()::timestamp)), COALESCE(update_time, '-'), COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10;", user_name)
 	}
 	
 	calculation := []String{}
