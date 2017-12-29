@@ -1,10 +1,9 @@
-package hello
+package website
 
 import (
 	"log"
 	"net/http"
 	"text/template"
-	logging "gopkg.in/tokopedia/logging.v1"
 	"database/sql"
     "github.com/lib/pq"
     "fmt"
@@ -33,25 +32,12 @@ type Config struct {
 }
 
 type WebsiteModule struct {
-	cfg       *Config
 	render    *template.Template  //FOR TRAINING
 	db 		  *sqlx.DB
 	pool 	  *redis.Pool
 }
 
 func NewWebsiteModule() *WebsiteModule {
-
-	var cfg Config
-
-	ok := logging.ReadModuleConfig(&cfg, "config", "website") || logging.ReadModuleConfig(&cfg, "files/etc/gosample", "website")
-	if !ok {
-		// when the app is run with -e switch, this message will automatically be redirected to the log file specified
-		log.Fatalln("failed to read config")
-	}
-
-	// this message only shows up if app is run with -debug option, so its great for debugging
-	logging.Debug.Println("hello init called", cfg.Server.Name)
-
 	db, err := sqlx.Connect("postgres", "postgres://da161205:123Toped456@devel-postgre.tkpd/tokopedia-user?sslmode=disable")
 	if err != nil {
         log.Fatalln(err)
@@ -87,7 +73,6 @@ func (nwm *WebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Request) 
 
 	user := []User{}
 	user_name := "%"+r.FormValue("q")+"%"
-	var query string
 	if user_name != "%%" {
 		nwm.db.Select(&user, "SELECT user_id, COALESCE(user_name,'-'), COALESCE(msisdn,'-'), email, COALESCE(birth_date,'-'), COALESCE(create_time, date_trunc('second', now()::timestamp)), COALESCE(update_time, '-'), COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER;")
 	} else {

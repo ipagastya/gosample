@@ -3,8 +3,6 @@
 		<title>This is Testing</title>
 	</head>
 	<body>
-		My Name is {{ .name }}<br>
-		My Age is {{ .age }}<br>
 		<table>
 			<tr>
 				<td>ID</td>
@@ -17,12 +15,17 @@
 				<td>user_age</td>
 				<td>calculation</td>
 			</tr>
-			{{ range _, $usr := .user }}
+			{{ range $i, $usr := .user }}
 			<tr>
-				{{ range _, $value := $usr}}
-				<td>{{ $value }}</td>
-				{{ end }}
-				{{ range _, $result := .calculation }}
+				<td>{{ $usr.ID }}</td>
+				<td>{{ $usr.Name }}</td>
+				<td>{{ $usr.MSISDN }}</td>
+				<td>{{ $usr.Email }}</td>
+				<td>{{ $usr.BirthDate }}</td>
+				<td>{{ $usr.CreatedTime }}</td>
+				<td>{{ $usr.UpdateTime }}</td>
+				<td>{{ $usr.UserAge }}</td>
+				{{ range $j, $result := .calculation }}
 				<td>{{ $result }}</td>
 				{{ end }}
 			</tr>
