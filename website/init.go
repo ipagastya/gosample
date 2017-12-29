@@ -20,7 +20,7 @@ type User struct {
 	BirthDate pq.NullTime `db:"birth_date"`
 	CreatedTime time.Time `db:"create_time"`
 	UpdateTime pq.NullTime `db:"update_time"`
-	UserAge int `db:"-"`
+	UserAge int `db:"user_age"`
 	Calculation string `db:"-"`
 }
 
@@ -44,7 +44,7 @@ func NewWebsiteModule() *WebsiteModule {
 		db:			db,
 		pool: 		&redis.Pool{
 			            MaxIdle:     3,
-			            IdleTimeout: 240 * time.Se<!--  -->ond,
+			            IdleTimeout: 240 * time.Second,
 			            Dial: func() (redis.Conn, error) {
 			                conn, err := redis.Dial("tcp", "devel-redis.tkpd:6379")
 			                if err != nil {
