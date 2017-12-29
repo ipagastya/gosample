@@ -63,7 +63,7 @@ func NewWebsiteModule() *WebsiteModule {
 	return &WebsiteModule{
 		cfg:       	&cfg,
 		render:    	engine,
-		db:			&db,
+		db:			db,
 		pool: 		&redis.Pool{
 			            MaxIdle:     3,
 			            IdleTimeout: 240 * time.Second,
@@ -78,7 +78,7 @@ func NewWebsiteModule() *WebsiteModule {
 	}
 }
 
-func (nwm *NewWebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Request) {
+func (nwm *WebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Request) {
 	conn := nwm.pool.Get()
 	visitorCount, err := conn.Do("INCR", "visitors")
 	if err != nil {
@@ -94,9 +94,10 @@ func (nwm *NewWebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Reques
 		nwm.db.Select(&user, "SELECT user_id, COALESCE(user_name,'-'), COALESCE(msisdn,'-'), email, COALESCE(birth_date,'-'), COALESCE(create_time, date_trunc('second', now()::timestamp)), COALESCE(update_time, '-'), COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10;", user_name)
 	}
 	
-	calculation := []String{}
+	calculation := []string{}
+	const constant = 125.25
 	for _, usr := range user {
-		calculation = append(fmt.Sprintf("%.1f", (usr.ID * 25.25)))
+		calculation = append(fmt.Sprintf("%.1f", (usr.ID * constant)))
 	}
 
 	data := map[string]interface{}{
