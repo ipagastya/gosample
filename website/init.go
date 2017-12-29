@@ -68,7 +68,7 @@ func (nwm *WebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Request) 
 	if userName != "%%" {
 		err = nwm.db.Select(&users, "SELECT user_id, user_name, msisdn, user_email, birth_date, create_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER;")
 	} else {
-		err = nwm.db.Select(&users, "SELECT user_id, user_name, msisdn, user_email, birth_date, create_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10;", userName)
+		err = nwm.db.Select(&users, "SELECT user_id, user_name, msisdn, user_email, birth_date, create_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER WHERE user_name ILIKE $1 ORDER BY user_name ASC LIMIT 10;", userName)
 	}
 	if err != nil {
 		log.Println(err.Error())
