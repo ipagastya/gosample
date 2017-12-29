@@ -64,23 +64,23 @@ func (nwm *WebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Request) 
 	}
 
 	users := []User{}
-	user_name := "%"+r.FormValue("q")+"%"
-	if user_name != "%%" {
+	userName := "%"+r.FormValue("q")+"%"
+	if userName != "%%" {
 		err = nwm.db.Select(&users, "SELECT user_id, user_name, msisdn, user_email, birth_date, create_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER;")
 	} else {
-		err = nwm.db.Select(&users, "SELECT user_id, user_name, msisdn, user_email, birth_date, create_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10;", user_name)
+		err = nwm.db.Select(&users, "SELECT user_id, user_name, msisdn, user_email, birth_date, create_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10;", userName)
 	}
 	if err != nil {
 		log.Println(err.Error())
 	}
 
 	const constant = 125.25
-	for _, user := range users {
-		user.Calculation = fmt.Sprintf("%.1f", (float64(user.ID) * constant))
+	for idx, _ := range users {
+		users[idx].Calculation = fmt.Sprintf("%.1f", (float64(users[idx].ID) * constant))
 	}
 
 	data := map[string]interface{}{
-		"user": users,
+		"users": users,
 		"visitorCount": visitorCount,
 	}
 
