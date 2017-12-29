@@ -21,14 +21,7 @@ type User struct {
 	CreatedTime time.Time `db:"create_time"`
 	UpdateTime pq.NullTime `db:"update_time"`
 	UserAge int `db:"-"`
-}
-
-type ServerConfig struct {
-	Name string
-}
-
-type Config struct {
-	Server ServerConfig
+	Calculation string `db:"-"`
 }
 
 type WebsiteModule struct {
@@ -47,12 +40,11 @@ func NewWebsiteModule() *WebsiteModule {
 	engine := template.Must(template.ParseGlob("files/var/templates/*"))
 
 	return &WebsiteModule{
-		cfg:       	&cfg,
 		render:    	engine,
 		db:			db,
 		pool: 		&redis.Pool{
 			            MaxIdle:     3,
-			            IdleTimeout: 240 * time.Second,
+			            IdleTimeout: 240 * time.Se<!--  -->ond,
 			            Dial: func() (redis.Conn, error) {
 			                conn, err := redis.Dial("tcp", "devel-redis.tkpd:6379")
 			                if err != nil {
@@ -71,24 +63,25 @@ func (nwm *WebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Request) 
 		log.Println(err.Error())
 	}
 
-	user := []User{}
+	users := []User{}
 	user_name := "%"+r.FormValue("q")+"%"
 	if user_name != "%%" {
-		nwm.db.Select(&user, "SELECT user_id, COALESCE(user_name,'-'), COALESCE(msisdn,'-'), email, COALESCE(birth_date,'-'), COALESCE(create_time, date_trunc('second', now()::timestamp)), COALESCE(update_time, '-'), COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER;")
+		err = nwm.db.Select(&users, "SELECT user_id, user_name, msisdn, user_email, birth_date, create_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER;")
 	} else {
-		nwm.db.Select(&user, "SELECT user_id, COALESCE(user_name,'-'), COALESCE(msisdn,'-'), email, COALESCE(birth_date,'-'), COALESCE(create_time, date_trunc('second', now()::timestamp)), COALESCE(update_time, '-'), COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10;", user_name)
+		err = nwm.db.Select(&users, "SELECT user_id, user_name, msisdn, user_email, birth_date, create_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER WHERE user_name LIKE $1 ORDER BY user_name ASC LIMIT 10;", user_name)
 	}
-	
-	calculation := []string{}
+	if err != nil {
+		log.Println(err.Error())
+	}
+
 	const constant = 125.25
-	for _, usr := range user {
-		calculation = append(calculation, fmt.Sprintf("%.1f", (float64(usr.ID) * constant)))
+	for _, user := range users {
+		user.Calculation = fmt.Sprintf("%.1f", (float64(user.ID) * constant))
 	}
 
 	data := map[string]interface{}{
-		"user": user,
+		"user": users,
 		"visitorCount": visitorCount,
-		"calculation": calculation,
 	}
 
 	err = nwm.render.ExecuteTemplate(w, "home.html", data)

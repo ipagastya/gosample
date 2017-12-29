@@ -15,19 +15,17 @@
 				<td>user_age</td>
 				<td>calculation</td>
 			</tr>
-			{{ range $i, $usr := .user }}
+			{{ range $index, $user := .users }}
 			<tr>
-				<td>{{ $usr.ID }}</td>
-				<td>{{ $usr.Name }}</td>
-				<td>{{ $usr.MSISDN }}</td>
-				<td>{{ $usr.Email }}</td>
-				<td>{{ $usr.BirthDate }}</td>
-				<td>{{ $usr.CreatedTime }}</td>
-				<td>{{ $usr.UpdateTime }}</td>
-				<td>{{ $usr.UserAge }}</td>
-				{{ range $j, $result := .calculation }}
-				<td>{{ $result }}</td>
-				{{ end }}
+				<td>{{ $user.ID }}</td>
+				<td>{{ $user.Name }}</td>
+				<td>{{ $user.MSISDN }}</td>
+				<td>{{ $user.Email }}</td>
+				<td>{{ $user.BirthDate }}</td>
+				<td>{{ $user.CreatedTime }}</td>
+				<td>{{ $user.UpdateTime }}</td>
+				<td>{{ $user.UserAge }}</td>
+				<td>{{ $user.Calculation }}</td>
 			</tr>
 			{{ end }}
 		</table>
