@@ -97,7 +97,7 @@ func (nwm *WebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Request) 
 	calculation := []string{}
 	const constant = 125.25
 	for _, usr := range user {
-		calculation = append(fmt.Sprintf("%.1f", (usr.ID * constant)))
+		calculation = append(calculation, fmt.Sprintf("%.1f", (float64(usr.ID) * constant)))
 	}
 
 	data := map[string]interface{}{
