@@ -22,6 +22,8 @@ func main() {
   hwm := hello.NewHelloWorldModule()
 
 	http.HandleFunc("/hello", hwm.SayHelloWorld)
+	http.HandleFunc("/set", hwm.SetRedis)
+	http.HandleFunc("/get", hwm.GetRedis)
 	go logging.StatsLog()
 
 	log.Fatal(grace.Serve(":9000", nil))
