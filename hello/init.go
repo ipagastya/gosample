@@ -4,7 +4,12 @@ import (
   "net/http"
   "log"
   "expvar"
+  "context"
+  "time"
+  "fmt"
+
   logging "gopkg.in/tokopedia/logging.v1"
+  "github.com/opentracing/opentracing-go"
 )
 
 type ServerConfig struct {
@@ -43,6 +48,33 @@ func NewHelloWorldModule() *HelloWorldModule {
 }
 
 func (hlm *HelloWorldModule) SayHelloWorld(w http.ResponseWriter, r *http.Request) {
+  span, ctx := opentracing.StartSpanFromContext(r.Context(), r.URL.Path)
+  defer span.Finish()
+
+  ctx = context.WithValue(ctx, "color", r.FormValue("color"))
+
   hlm.stats.Add(1)
-  w.Write([]byte("Hello " + hlm.something))
+  hlm.LogValueOfContext(ctx)
+  hlm.someSlowFuncWeWantToTrace(ctx, w)
+}
+
+func (hlm *HelloWorldModule) LogValueOfContext(ctx context.Context) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "LogValueOfContext")
+	defer span.Finish()
+
+	color := ctx.Value("color")
+	if color != nil {
+		fmt.Printf("%+v\n", color)
+	}
+}
+
+func (hlm *HelloWorldModule) someSlowFuncWeWantToTrace(ctx context.Context, w http.ResponseWriter) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "someSlowFuncWeWantToTrace")
+	defer span.Finish()
+
+	ctx = context.WithValue(ctx, "color", "red")
+
+	time.Sleep(3 * time.Second)
+
+	w.Write([]byte("Hello " + hlm.something))
 }
