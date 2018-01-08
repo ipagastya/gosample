@@ -22,6 +22,8 @@ func main() {
   hwm := hello.NewHelloWorldModule()
 
 	http.HandleFunc("/hello", hwm.SayHelloWorld)
+	http.HandleFunc("/insert", hwm.InsertDataIntoDatabase)
+	http.HandleFunc("/update", hwm.UpdateDataIntoDatabase)
 	go logging.StatsLog()
 
 	log.Fatal(grace.Serve(":9000", nil))
