@@ -22,6 +22,9 @@ func main() {
   hwm := hello.NewHelloWorldModule()
 
 	http.HandleFunc("/hello", hwm.SayHelloWorld)
+	http.HandleFunc("/get", hwm.GetSingleDataFromDatabase)
+	http.HandleFunc("/select", hwm.GetMultiDataFromDatabase)
+	http.HandleFunc("/search", hwm.SearchDataFromDatabase)
 	go logging.StatsLog()
 
 	log.Fatal(grace.Serve(":9000", nil))
