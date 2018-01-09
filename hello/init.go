@@ -80,6 +80,8 @@ func (hlm *HelloWorldModule) SetRedis(w http.ResponseWriter, r *http.Request) {
   	result = "Set Redis Failed"
   }
 
+  pool.Do("EXPIRE", key, 10)
+
   w.Write([]byte(result))
 }
 
