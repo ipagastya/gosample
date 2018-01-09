@@ -22,6 +22,7 @@ func main() {
   hwm := hello.NewHelloWorldModule()
 
 	http.HandleFunc("/hello", hwm.SayHelloWorld)
+	http.HandleFunc("/publish", hwm.PublishNSQ)
 	go logging.StatsLog()
 
 	log.Fatal(grace.Serve(":9000", nil))
