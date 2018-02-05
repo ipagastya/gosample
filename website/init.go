@@ -4,8 +4,7 @@ import (
 	"log"
 	"net/http"
 	"text/template"
-	"database/sql"
-    "github.com/lib/pq"
+	"github.com/lib/pq"
     "fmt"
     "github.com/jmoiron/sqlx"
     "github.com/garyburd/redigo/redis"
@@ -14,12 +13,15 @@ import (
 
 type User struct {
 	ID int `db:"user_id"`
-	Name sql.NullString `db:"user_name"`
-	MSISDN sql.NullString
+	Name string `db:"full_name"`
+	MSISDN string
 	Email string `db:"user_email"`
-	BirthDate pq.NullTime `db:"birth_date"`
-	CreatedTime time.Time `db:"create_time"`
-	UpdateTime pq.NullTime `db:"update_time"`
+	BirthTime pq.NullTime `db:"birth_date"`
+	BirthDate string
+	CreateTime time.Time `db:"create_time"`
+	CreatedTime string 
+	UpdatedTime pq.NullTime `db:"update_time"`
+	UpdateTime string
 	UserAge int `db:"user_age"`
 	Calculation string `db:"-"`
 }
@@ -65,10 +67,10 @@ func (nwm *WebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Request) 
 
 	users := []User{}
 	userName := "%"+r.FormValue("q")+"%"
-	if userName != "%%" {
-		err = nwm.db.Select(&users, "SELECT user_id, user_name, msisdn, user_email, birth_date, create_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER;")
+	if userName == "%%" {
+		err = nwm.db.Select(&users, "SELECT user_id, full_name, msisdn, user_email, birth_date, create_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER LIMIT 10;")
 	} else {
-		err = nwm.db.Select(&users, "SELECT user_id, user_name, msisdn, user_email, birth_date, create_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER WHERE user_name ILIKE $1 ORDER BY user_name ASC LIMIT 10;", userName)
+		err = nwm.db.Select(&users, "SELECT user_id, full_name, msisdn, user_email, birth_date, create_time, update_time, COALESCE(EXTRACT(YEAR from AGE(birth_date)),0) AS user_age FROM WS_USER WHERE full_name LIKE $1 ORDER BY full_name ASC LIMIT 10;", userName)
 	}
 	if err != nil {
 		log.Println(err.Error())
@@ -76,6 +78,20 @@ func (nwm *WebsiteModule) RenderWebpage(w http.ResponseWriter, r *http.Request) 
 
 	const constant = 125.25
 	for idx, _ := range users {
+		// = users[idx].BirthTime.Format("2006/01/02 15:04:05")
+		users[idx].CreatedTime = users[idx].CreateTime.Format("2006/01/02 15:04:05")
+		users[idx].UpdateTime = "-"
+		k, _ := users[idx].UpdatedTime.Value()
+		if k != nil {
+			users[idx].UpdateTime = k.(time.Time).Format("2006/01/02 15:04:05")
+		}
+
+		users[idx].BirthDate = "-"
+		k, _ = users[idx].BirthTime.Value()
+		if k != nil {
+			users[idx].BirthDate = k.(time.Time).Format("2006/01/02 15:04:05")
+		}
+
 		users[idx].Calculation = fmt.Sprintf("%.1f", (float64(users[idx].ID) * constant))
 	}
 
